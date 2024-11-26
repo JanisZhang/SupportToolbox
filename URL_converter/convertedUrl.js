@@ -8,16 +8,46 @@ style.innerHTML = `
     pointer-events: none; /* 禁用点击事件 */
     color: #888888;
   }
+  /* 自定义 Snackbar 样式 */
+  .snackbar {
+    visibility: hidden;
+    min-width: 250px;
+    margin-left: -125px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 2px;
+    padding: 16px;
+    position: fixed;
+    z-index: 1;
+    left: 50%;
+    bottom: 30px;
+    font-size: 17px;
+    transition: 0.5s;
+  }
+  
+  .snackbar.show {
+    visibility: visible;
+    animation: fadein 0.5s, fadeout 0.5s 4s;
+  }
+
+  @keyframes fadein {
+    from { bottom: 0; opacity: 0; }
+    to { bottom: 30px; opacity: 1; }
+  }
+
+  @keyframes fadeout {
+    from { bottom: 30px; opacity: 1; }
+    to { bottom: 0; opacity: 0; }
+  }
 `;
 document.head.appendChild(style);
 
-// 获取当前标签页的 URL
 chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
   if (tabs && tabs.length > 0) {
     const currentUrl = tabs[0].url;
-    console.log("Current URL:", currentUrl); // 输出 URL 到控制台
+    console.log("Current URL:", currentUrl);
 
-    // 公司信息：每个公司域名和对应的 ID
     const companies = [
       { id: 'abbvie', domain: 'https://abbvie.veevasfa.com' },
       { id: 'ascentage', domain: 'https://allist.veevasfa.com' },
@@ -39,27 +69,45 @@ chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
       { id: 'sinocelltech', domain: 'https://sinocelltech.veevasfa.com' }
     ];
 
-    // 检查 URL 是否包含 '/admindoc/'
-    if (currentUrl.includes('/admindoc/') ) {
-      // 提取路径部分（去除基地址部分）
-      const baseUrl = currentUrl.split('/admindoc/')[1]; // 获取 '/admindoc/' 后面的部分
-      console.log("Base URL after '/admindoc/':", baseUrl);
+    const companyTextMap = {
+      'abbvie': 'AbbVie',
+      'ascentage': 'Ascentage Pharma',
+      'aspen': 'Aspen Pharma',
+      'bms': 'BMS',
+      'beigene': 'BeiGene',
+      'eddingpharm': 'EddingPharm',
+      'hrs': 'HRS',
+      'innocare': 'InnoCare',
+      'innoventbio': 'Innovent Bio',
+      'j_j': 'Johnson & Johnson',
+      'kenvue': 'Kenvue',
+      'loreal': 'L’Oreal',
+      'msd': 'MSD Pharma',
+      'merck': 'Merck',
+      'mundi': 'Mundipharma',
+      'novo_nordisk': 'Novo Nordisk',
+      'sansheng': 'Sansheng',
+      'sinocelltech': 'Sinocelltech'
+    };
 
-      // 循环遍历每个公司，生成对应的 URL
+    if (currentUrl.includes('/admindoc/') || currentUrl.includes('/public-api/')) {
+      const baseUrl = currentUrl.split('/admindoc/')[1] || currentUrl.split('/public-api/')[1];
+      console.log("Base URL after splitting:", baseUrl);
+
       companies.forEach(function(company) {
-        const companyUrl = `${company.domain}/#/helpcenter?iframeRoute=/admindoc/${baseUrl}`;
+        const companyUrl = `${company.domain}${currentUrl.includes('/admindoc/') ? '/#/helpcenter?iframeRoute=' : '/public-api/'}${baseUrl}`;
         console.log(`${company.id} URL:`, companyUrl);
 
-        // 更新对应的 <a> 标签
         const urlElement = document.getElementById(company.id);
         if (urlElement) {
-          urlElement.textContent = `${company.id} OnlineHelp`;
+          const linkText = companyTextMap[company.id] || `${company.id} Online Help`;
+          urlElement.textContent = linkText;
           urlElement.href = companyUrl;
 
-          // 添加点击事件：点击链接后将其复制到剪贴板
-          urlElement.addEventListener('click', function() {
+          urlElement.addEventListener('click', function(event) {
+            event.preventDefault();
             navigator.clipboard.writeText(companyUrl).then(function() {
-              alert(`${company.id} URL copied to clipboard!`);
+              showSnackbar(`${companyTextMap[company.id]} URL copied to clipboard!`);
             }).catch(function(err) {
               console.error('Could not copy text: ', err);
             });
@@ -73,7 +121,7 @@ chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
         if (urlElement) {
           urlElement.textContent = "URL does not match criteria!";
           urlElement.href = "#"; // 禁用链接
-          urlElement.classList.add('disabled'); // 添加禁用样式
+          urlElement.classList.add('disabled'); // 禁用样式
         }
       });
     }
@@ -90,3 +138,19 @@ chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
     });
   }
 });
+
+// 显示 Snackbar
+function showSnackbar(message) {
+  const snackbar = document.createElement("div");
+  snackbar.className = "snackbar";
+  snackbar.textContent = message;
+  document.body.appendChild(snackbar);
+  // 显示并自动消失
+  setTimeout(() => {
+    snackbar.classList.add("show");
+  }, 100);
+  setTimeout(() => {
+    snackbar.classList.remove("show");
+    document.body.removeChild(snackbar);
+  }, 5000); // 5秒后自动消失
+}
