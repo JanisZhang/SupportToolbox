@@ -8,6 +8,38 @@ style.innerHTML = `
     pointer-events: none; /* 禁用点击事件 */
     color: #888888;
   }
+  /* 自定义 Snackbar 样式 */
+  .snackbar {
+    visibility: hidden;
+    min-width: 250px;
+    margin-left: -125px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 2px;
+    padding: 16px;
+    position: fixed;
+    z-index: 1;
+    left: 50%;
+    bottom: 30px;
+    font-size: 17px;
+    transition: 0.5s;
+  }
+  
+  .snackbar.show {
+    visibility: visible;
+    animation: fadein 0.5s, fadeout 0.5s 4s;
+  }
+
+  @keyframes fadein {
+    from { bottom: 0; opacity: 0; }
+    to { bottom: 30px; opacity: 1; }
+  }
+
+  @keyframes fadeout {
+    from { bottom: 30px; opacity: 1; }
+    to { bottom: 0; opacity: 0; }
+  }
 `;
 document.head.appendChild(style);
 
@@ -37,7 +69,7 @@ chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
       { id: 'sinocelltech', domain: 'https://sinocelltech.veevasfa.com' }
     ];
 
-      const companyTextMap = {
+    const companyTextMap = {
       'abbvie': 'AbbVie',
       'ascentage': 'Ascentage Pharma',
       'aspen': 'Aspen Pharma',
@@ -58,47 +90,24 @@ chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
       'sinocelltech': 'Sinocelltech'
     };
 
-    if (currentUrl.includes('/admindoc/') ) {
-      const baseUrl = currentUrl.split('/admindoc/')[1];
-      console.log("Base URL after '/admindoc/':", baseUrl);
+    if (currentUrl.includes('/admindoc/') || currentUrl.includes('/public-api/')) {
+      const baseUrl = currentUrl.split('/admindoc/')[1] || currentUrl.split('/public-api/')[1];
+      console.log("Base URL after splitting:", baseUrl);
 
       companies.forEach(function(company) {
-        const companyUrl = `${company.domain}/#/helpcenter?iframeRoute=/admindoc/${baseUrl}`;
+        const companyUrl = `${company.domain}${currentUrl.includes('/admindoc/') ? '/#/helpcenter?iframeRoute=' : '/public-api/'}${baseUrl}`;
         console.log(`${company.id} URL:`, companyUrl);
 
         const urlElement = document.getElementById(company.id);
         if (urlElement) {
-          const linkText = companyTextMap[company.id] || '${company.id} Online Help';
+          const linkText = companyTextMap[company.id] || `${company.id} Online Help`;
           urlElement.textContent = linkText;
           urlElement.href = companyUrl;
 
-          urlElement.addEventListener('click', function() {
+          urlElement.addEventListener('click', function(event) {
+            event.preventDefault();
             navigator.clipboard.writeText(companyUrl).then(function() {
-              alert(`${company.id} URL copied to clipboard!`);
-            }).catch(function(err) {
-              console.error('Could not copy text: ', err);
-            });
-          });
-        }
-      });
-    } else if (currentUrl.includes('/public-api/') ) {
-
-      const baseUrl = currentUrl.split('/public-api/')[1];
-      console.log("Base URL after '/public-api/':", baseUrl);
-
-      companies.forEach(function(company) {
-        const companyUrl = `${company.domain}/public-api/${baseUrl}`;
-        console.log(`${company.id} URL:`, companyUrl);
-
-        const urlElement = document.getElementById(company.id);
-        if (urlElement) {
-          const linkText = companyTextMap[company.id] || '${company.id} Online Help';
-          urlElement.textContent = linkText;
-          urlElement.href = companyUrl;
-
-          urlElement.addEventListener('click', function() {
-            navigator.clipboard.writeText(companyUrl).then(function() {
-              alert(`${company.id} URL copied to clipboard!`);
+              showSnackbar(`${companyTextMap[company.id]} URL copied to clipboard!`);
             }).catch(function(err) {
               console.error('Could not copy text: ', err);
             });
@@ -129,3 +138,19 @@ chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
     });
   }
 });
+
+// 显示 Snackbar
+function showSnackbar(message) {
+  const snackbar = document.createElement("div");
+  snackbar.className = "snackbar";
+  snackbar.textContent = message;
+  document.body.appendChild(snackbar);
+  // 显示并自动消失
+  setTimeout(() => {
+    snackbar.classList.add("show");
+  }, 100);
+  setTimeout(() => {
+    snackbar.classList.remove("show");
+    document.body.removeChild(snackbar);
+  }, 5000); // 5秒后自动消失
+}
