@@ -11,13 +11,11 @@ style.innerHTML = `
 `;
 document.head.appendChild(style);
 
-// 获取当前标签页的 URL
 chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
   if (tabs && tabs.length > 0) {
     const currentUrl = tabs[0].url;
-    console.log("Current URL:", currentUrl); // 输出 URL 到控制台
+    console.log("Current URL:", currentUrl);
 
-    // 公司信息：每个公司域名和对应的 ID
     const companies = [
       { id: 'abbvie', domain: 'https://abbvie.veevasfa.com' },
       { id: 'ascentage', domain: 'https://allist.veevasfa.com' },
@@ -39,24 +37,66 @@ chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
       { id: 'sinocelltech', domain: 'https://sinocelltech.veevasfa.com' }
     ];
 
-    // 检查 URL 是否包含 '/admindoc/'
+
+    const companyTextMap = {
+      'abbvie': 'AbbVie Online Help',
+      'ascentage': 'Ascentage Pharma Help Center',
+      'aspen': 'Aspen Pharma Online Help',
+      'bms': 'BMS Online Help',
+      'beigene': 'BeiGene Online Help',
+      'eddingpharm': 'EddingPharm Online Help',
+      'hrs': 'HRS Online Help',
+      'innocare': 'InnoCare Online Help',
+      'innoventbio': 'Innovent Bio Online Help',
+      'j_j': 'Johnson & Johnson Online Help',
+      'kenvue': 'Kenvue Online Help',
+      'loreal': 'L’Oreal Online Help',
+      'msd': 'MSD Pharma Online Help',
+      'merck': 'Merck Online Help',
+      'mundi': 'Mundipharma Online Help',
+      'novo_nordisk': 'Novo Nordisk Online Help',
+      'sansheng': 'Sansheng Online Help',
+      'sinocelltech': 'Sinocelltech Online Help'
+    };
+
     if (currentUrl.includes('/admindoc/') ) {
-      // 提取路径部分（去除基地址部分）
-      const baseUrl = currentUrl.split('/admindoc/')[1]; // 获取 '/admindoc/' 后面的部分
+      const baseUrl = currentUrl.split('/admindoc/')[1];
       console.log("Base URL after '/admindoc/':", baseUrl);
 
-      // 循环遍历每个公司，生成对应的 URL
       companies.forEach(function(company) {
         const companyUrl = `${company.domain}/#/helpcenter?iframeRoute=/admindoc/${baseUrl}`;
         console.log(`${company.id} URL:`, companyUrl);
 
-        // 更新对应的 <a> 标签
         const urlElement = document.getElementById(company.id);
         if (urlElement) {
-          urlElement.textContent = `${company.id} OnlineHelp`;
+          const linkText = companyTextMap[company.id] || '${company.id} Online Help';
+          urlElement.textContent = linkText;
           urlElement.href = companyUrl;
 
-          // 添加点击事件：点击链接后将其复制到剪贴板
+          urlElement.addEventListener('click', function() {
+            navigator.clipboard.writeText(companyUrl).then(function() {
+              alert(`${company.id} URL copied to clipboard!`);
+            }).catch(function(err) {
+              console.error('Could not copy text: ', err);
+            });
+          });
+        }
+      });
+    } else if (currentUrl.includes('/public-api/') ) {
+
+      const baseUrl = currentUrl.split('/public-api/')[1];
+      console.log("Base URL after '/public-api/':", baseUrl);
+
+      companies.forEach(function(company) {
+        const companyUrl = `${company.domain}/public-api/${baseUrl}`;
+        console.log(`${company.id} URL:`, companyUrl);
+
+        const urlElement = document.getElementById(company.id);
+        if (urlElement) {
+          const linkText = companyTextMap[company.id] || '${company.id} Online Help';
+          urlElement.textContent = linkText;
+          urlElement.href = companyUrl;
+
           urlElement.addEventListener('click', function() {
             navigator.clipboard.writeText(companyUrl).then(function() {
               alert(`${company.id} URL copied to clipboard!`);
@@ -73,7 +113,7 @@ chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
         if (urlElement) {
           urlElement.textContent = "URL does not match criteria!";
           urlElement.href = "#"; // 禁用链接
-          urlElement.classList.add('disabled'); // 添加禁用样式
+          urlElement.classList.add('disabled'); // 禁用样式
         }
       });
     }
