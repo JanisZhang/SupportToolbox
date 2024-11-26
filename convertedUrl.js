@@ -37,26 +37,25 @@ chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
       { id: 'sinocelltech', domain: 'https://sinocelltech.veevasfa.com' }
     ];
 
-
-    const companyTextMap = {
-      'abbvie': 'AbbVie Online Help',
-      'ascentage': 'Ascentage Pharma Help Center',
-      'aspen': 'Aspen Pharma Online Help',
-      'bms': 'BMS Online Help',
-      'beigene': 'BeiGene Online Help',
-      'eddingpharm': 'EddingPharm Online Help',
-      'hrs': 'HRS Online Help',
-      'innocare': 'InnoCare Online Help',
-      'innoventbio': 'Innovent Bio Online Help',
-      'j_j': 'Johnson & Johnson Online Help',
-      'kenvue': 'Kenvue Online Help',
-      'loreal': 'L’Oreal Online Help',
-      'msd': 'MSD Pharma Online Help',
-      'merck': 'Merck Online Help',
-      'mundi': 'Mundipharma Online Help',
-      'novo_nordisk': 'Novo Nordisk Online Help',
-      'sansheng': 'Sansheng Online Help',
-      'sinocelltech': 'Sinocelltech Online Help'
+      const companyTextMap = {
+      'abbvie': 'AbbVie',
+      'ascentage': 'Ascentage Pharma',
+      'aspen': 'Aspen Pharma',
+      'bms': 'BMS',
+      'beigene': 'BeiGene',
+      'eddingpharm': 'EddingPharm',
+      'hrs': 'HRS',
+      'innocare': 'InnoCare',
+      'innoventbio': 'Innovent Bio',
+      'j_j': 'Johnson & Johnson',
+      'kenvue': 'Kenvue',
+      'loreal': 'L’Oreal',
+      'msd': 'MSD Pharma',
+      'merck': 'Merck',
+      'mundi': 'Mundipharma',
+      'novo_nordisk': 'Novo Nordisk',
+      'sansheng': 'Sansheng',
+      'sinocelltech': 'Sinocelltech'
     };
 
     if (currentUrl.includes('/admindoc/') ) {
