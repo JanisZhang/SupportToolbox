@@ -65,6 +65,7 @@ function myFunction() {
     }
 }
 
+
 async function getCurrentTab() {
     if (chrome.tabs && chrome.tabs.query) {
         let queryOptions = { active: true, lastFocusedWindow: true };
@@ -74,6 +75,11 @@ async function getCurrentTab() {
     } else {
         throw new Error("chrome.tabs.query is not available.");
     }
+}
+
+function getUserInfo(){
+    //Todo:get login username and user_id from LocalStorage
+
 }
 
 function showSnackbar(message) {
@@ -90,24 +96,6 @@ function showSnackbar(message) {
         document.body.removeChild(snackbar); // Remove from DOM after 3 seconds
     }, 3000); // Automatically disappears after 3 seconds
 }
-
-
-
-// 头脑风暴一下，
-// 环境: todo
-// 账号: todo
-// user_id: todo
-// 步骤: todo tab url
-// 实际结果: 
-// kibana错误日志: 如果是测试环境error，没准真的可以
-// 配置功能参考online-help/wiki章节链接:
-// 期待:
-// 其他说明:
-// PS branch: 默认 product 其实写不写都行
-
-
-
-
 
 
 
