@@ -1,0 +1,14 @@
+{
+    "manifest_version": 3,
+    "name": "Veeva Env Info Extractor",
+    "description": "Extracts environment information from web pages to help with troubleshooting.",
+    "version": "1.0",
+    "action": {
+        "default_popup": "view.html"
+    },
+    "permissions": [
+        "tabs",
+        "cookies",
+        "storage"
+    ]
+}
