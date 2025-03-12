@@ -87,8 +87,8 @@ function showSnackbar(message) {
     }, 100);
     setTimeout(() => {
         snackbar.classList.remove("show");
-        document.body.removeChild(snackbar); // Remove from DOM after 5 seconds
-    }, 5000); // Automatically disappears after 5 seconds
+        document.body.removeChild(snackbar); // Remove from DOM after 3 seconds
+    }, 3000); // Automatically disappears after 3 seconds
 }
 
 
