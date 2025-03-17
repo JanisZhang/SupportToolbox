@@ -41,46 +41,73 @@ style.innerHTML = `
 
 document.head.appendChild(style);
 
-async function main() {
-    myFunction();
+function main() {
+    handleClipButtonClick();
 }
 
 main();
 
-function myFunction() {
+function handleClipButtonClick() {
     const buttonElement = document.getElementById("clip");
     if (buttonElement) {
-        buttonElement.addEventListener("click", async function (event) {
-            const tabUrl = await getCurrentTab();
-            console.log("Clipped tab url:", tabUrl);
-            console.log(typeof tabUrl === 'string' && tabUrl.startsWith("http"));
-            if (typeof tabUrl === 'string' && tabUrl.startsWith("http")) {
-                navigator.clipboard.writeText(tabUrl).then(function () {
+        
+            buttonElement.addEventListener("click", async function (event) {
+            
+            const{user_id, username, login_username, currentTabUrl} = await getInfoFromEnv();
+
+            console.log("user_id: ", user_id);
+            console.log("username:", username);
+            console.log("login_username:", login_username);
+            console.log(typeof currentTabUrl === 'string' && currentTabUrl.startsWith("http"));
+
+            if (typeof currentTabUrl === 'string' && currentTabUrl.startsWith("http")) {
+                navigator.clipboard.writeText(currentTabUrl).then(function () {
                     showSnackbar('Copied');
                 }).catch(function (err) {
                     console.error('Could not copy text: ', err);
                 });
             }
+
         });
     }
 }
 
+function getInfoFromEnv() {
+    return new Promise((resolve, reject) => {
 
-async function getCurrentTab() {
-    if (chrome.tabs && chrome.tabs.query) {
-        let queryOptions = { active: true, lastFocusedWindow: true };
-        let [tab] = await chrome.tabs.query(queryOptions);
-        console.log("Tab data:", tab);
-        return tab ? tab.url : "No active tab";
-    } else {
-        throw new Error("chrome.tabs.query is not available.");
-    }
+        chrome.tabs.query({ active: true, lastFocusedWindow: true }, async (tabs) => {
+            if (!tabs || tabs.length === 0) {
+                return reject('No active tab found');
+            }
+
+            const currentTabUrl = tabs[0].url;
+
+            try{
+                const result = await chrome.scripting.executeScript({
+                    target: {tabId: tabs[0].id},
+                    function: getUserInfoFromLocalStorage
+                });
+    
+                const {user_id, username, login_username} = result[0]?.result || '';  
+                resolve({ user_id, username, login_username, currentTabUrl});
+            }catch(error){
+                reject(error)
+            }
+
+        });
+    });
 }
 
-function getUserInfo(){
-    //Todo:get login username and user_id from LocalStorage
 
+function getUserInfoFromLocalStorage() {
+    // get user_id, login_username, username from localStorage, need storage permission
+    const user_id = localStorage.getItem("ls.user_id");
+    const username = localStorage.getItem("ls.username")
+    const login_username = localStorage.getItem("ls.login_username")
+
+    return {user_id, username, login_username}
 }
+
 
 function showSnackbar(message) {
     const snackbar = document.createElement("div");
@@ -93,27 +120,8 @@ function showSnackbar(message) {
     }, 100);
     setTimeout(() => {
         snackbar.classList.remove("show");
-        document.body.removeChild(snackbar); // Remove from DOM after 3 seconds
-    }, 3000); // Automatically disappears after 3 seconds
+        document.body.removeChild(snackbar); // Remove from DOM after 2 seconds
+    }, 2000); // Automatically disappears after 2 seconds
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

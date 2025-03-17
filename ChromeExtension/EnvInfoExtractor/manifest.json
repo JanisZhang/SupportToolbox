@@ -7,8 +7,10 @@
         "default_popup": "view.html"
     },
     "permissions": [
+        "activeTab",
         "tabs",
         "cookies",
-        "storage"
+        "storage",
+        "scripting"
     ]
 }
