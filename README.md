@@ -1,7 +1,7 @@
-Develop some tools for the team to use
+本仓库包含了一些为团队开发的 Chrome 插件工具
+
 
 ## 安装
-
 1. 下载插件文件。
 2. 打开 Chrome 浏览器，进入 `chrome://extensions/` 页面。
 3. 打开右上角的 "开发者模式"。
