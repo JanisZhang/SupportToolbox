@@ -62,6 +62,7 @@ chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
       { id: 'aspen', domain: 'https://aspenpharma.veevasfa.com' },
       { id: 'bms', domain: 'https://bms.veevasfa.com' },
       { id: 'beigene', domain: 'https://beigene.veevasfa.com' },
+      { id: 'cslbehring', domain: 'https://cslbehring.veevasfa.com' },
       { id: 'eddingpharm', domain: 'https://edding.veevasfa.com' },
       { id: 'innocare', domain: 'https://innocarepharma.veevasfa.com' },
       { id: 'innoventbio', domain: 'https://innoventbio.veevasfa.com' },
@@ -72,6 +73,7 @@ chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
       { id: 'merck', domain: 'https://mconnect.veevasfa.com' },
       { id: 'mundi', domain: 'https://mundipharma.veevasfa.com' },
       { id: 'novo_nordisk', domain: 'https://novoevents.veevasfa.com' },
+      { id: 'pfizer', domain: 'https://pfizer.veevasfa.com' },
       { id: 'sansheng', domain: 'https://3sbio.veevasfa.com' }
     ];
 
@@ -81,6 +83,7 @@ chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
       'aspen': 'Aspen Pharma',
       'bms': 'BMS',
       'beigene': 'BeiGene',
+      'cslbehring': 'CSL Behring',
       'eddingpharm': 'EddingPharm',
       'innocare': 'InnoCare',
       'innoventbio': 'Innovent Bio',
@@ -91,6 +94,7 @@ chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
       'merck': 'Merck',
       'mundi': 'Mundipharma',
       'novo_nordisk': 'Novo Nordisk',
+      'pfizer':'Pfizer',
       'sansheng': 'Sansheng',
     };
 
