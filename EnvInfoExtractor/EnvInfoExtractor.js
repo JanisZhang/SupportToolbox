@@ -8,6 +8,69 @@
 
 const style = document.createElement("style");
 style.innerHTML = `
+    
+/* Remove default margin and padding from body */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    display: flex;
+    justify-content: center; /* Center content horizontally */
+    align-items: flex-start; /* Align content to the top */
+    height: 100vh; /* Full height of the viewport */
+    min-height: 100%; /* Ensure the body covers at least the full height */
+}
+
+/* Plugin container styling */
+.plugin-container {
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    margin: 0; /* Remove margin to avoid extra space around the container */
+    font-family: Arial, sans-serif;
+    width: 100%; /* Ensure it takes up available width */
+    box-sizing: border-box; /* Include padding in total width calculation */
+}
+
+/* Paragraph styling */
+.plugin-text {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #333;
+    margin: 8px 0;
+    padding: 0;
+}
+
+/* Button styling */
+.clip-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 15px; /* Add margin above button */
+}
+
+/* Button hover effect */
+.clip-button:hover {
+    background-color: #45a049;
+}
+
+/* Button focus effect */
+.clip-button:focus {
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 128, 0, 0.6);
+}
+
+
   .disabled {
     background-color: #cccccc;
     pointer-events: none; /* 禁用点击事件 */
@@ -45,40 +108,70 @@ style.innerHTML = `
     from { bottom: 30px; opacity: 1; }
     to { bottom: 0; opacity: 0; }
   }
+
 `;
 
 document.head.appendChild(style);
 
 function main() {
-    handleClipButtonClick();
+    displayPluginContent();
+    // handleClipButtonClick();
 }
 
 main();
 
-function handleClipButtonClick() {
-    const buttonElement = document.getElementById("clip");
-    if (buttonElement) {
-        
-            buttonElement.addEventListener("click", async function (event) {
+async function displayPluginContent() {
+    const{user_id, username, login_username, currentTabUrl} = await getInfoFromEnv();
+
+    const formattedUrl = currentTabUrl.split('.com')[0]+'.com';
+
+    console.log("user_id: ", user_id);
+    console.log("username:", username);
+    console.log("login_username:", login_username);
+    console.log("currentTabUrl:", currentTabUrl);
+    console.log("formattedUrl:", formattedUrl);
+
+    // const formatted_Login_username = login_username.replace('\"\g','');
+
+    const pluginContent = `
+    <div class="plugin-container">
+        <p class="plugin-text">环境：${formattedUrl}</p>
+        <p class="plugin-text">账号：${login_username} (user_id=${user_id}), 姓名：${username} </p>
+        <p class="plugin-text">步骤：${currentTabUrl}</p>
+        <button id="clip" class="clip-button">Copy Link</button>
+    </div>`;
+
+    const container = document.createElement("div");
+    container.innerHTML = pluginContent;
+    document.body.appendChild(container);
+
+    setTimeout(()=> {
+        const buttonElement = document.getElementById("clip");
+        if (buttonElement) {
             
-            const{user_id, username, login_username, currentTabUrl} = await getInfoFromEnv();
+                buttonElement.addEventListener("click", async function (event) {
+                
+                const{currentTabUrl} = await getInfoFromEnv();
+    
+                if (typeof currentTabUrl === 'string' && currentTabUrl.startsWith("http")) {
 
-            console.log("user_id: ", user_id);
-            console.log("username:", username);
-            console.log("login_username:", login_username);
-            console.log(typeof currentTabUrl === 'string' && currentTabUrl.startsWith("http"));
-
-            if (typeof currentTabUrl === 'string' && currentTabUrl.startsWith("http")) {
-                navigator.clipboard.writeText(currentTabUrl).then(function () {
-                    showSnackbar('Copied');
-                }).catch(function (err) {
-                    console.error('Could not copy text: ', err);
-                });
-            }
-
-        });
-    }
+                    const environment = `环境：${currentTabUrl.split('.com')[0] + '.com'}`;
+                    const accountInfo = `账号：${login_username} (user_id=${user_id}), 姓名：${username}`;
+                    const steps = `步骤：${currentTabUrl}`;
+                    const textToCopy = `${environment}\n${accountInfo}\n${steps}`;
+ 
+                    navigator.clipboard.writeText(textToCopy).then(function () {
+                        showSnackbar('Copied');
+                    }).catch(function (err) {
+                        console.error('Could not copy text: ', err);
+                    });
+                }
+    
+            });
+        }
+    },0);
 }
+
 
 function getInfoFromEnv() {
     return new Promise((resolve, reject) => {
@@ -129,7 +222,6 @@ function showSnackbar(message) {
     setTimeout(() => {
         snackbar.classList.remove("show");
         document.body.removeChild(snackbar); // Remove from DOM after 2 seconds
-    }, 2000); // Automatically disappears after 2 seconds
+    }, 800); // Automatically disappears after 2 seconds
 }
-
 
