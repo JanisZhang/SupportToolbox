@@ -63,7 +63,6 @@ chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
       { id: 'bms', domain: 'https://bms.veevasfa.com' },
       { id: 'beigene', domain: 'https://beigene.veevasfa.com' },
       { id: 'eddingpharm', domain: 'https://edding.veevasfa.com' },
-      { id: 'hrs', domain: 'https://hrs.veevasfa.com' },
       { id: 'innocare', domain: 'https://innocarepharma.veevasfa.com' },
       { id: 'innoventbio', domain: 'https://innoventbio.veevasfa.com' },
       { id: 'j_j', domain: 'https://iconnect.veevasfa.com' },
@@ -73,8 +72,7 @@ chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
       { id: 'merck', domain: 'https://mconnect.veevasfa.com' },
       { id: 'mundi', domain: 'https://mundipharma.veevasfa.com' },
       { id: 'novo_nordisk', domain: 'https://novoevents.veevasfa.com' },
-      { id: 'sansheng', domain: 'https://3sbio.veevasfa.com' },
-      { id: 'sinocelltech', domain: 'https://sinocelltech.veevasfa.com' }
+      { id: 'sansheng', domain: 'https://3sbio.veevasfa.com' }
     ];
 
     const companyTextMap = {
@@ -84,7 +82,6 @@ chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
       'bms': 'BMS',
       'beigene': 'BeiGene',
       'eddingpharm': 'EddingPharm',
-      'hrs': 'HRS',
       'innocare': 'InnoCare',
       'innoventbio': 'Innovent Bio',
       'j_j': 'Johnson & Johnson',
@@ -95,7 +92,6 @@ chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
       'mundi': 'Mundipharma',
       'novo_nordisk': 'Novo Nordisk',
       'sansheng': 'Sansheng',
-      'sinocelltech': 'Sinocelltech'
     };
 
     if (currentUrl.includes('/admindoc/') || currentUrl.includes('/public-api/')) {
