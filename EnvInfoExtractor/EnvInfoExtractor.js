@@ -121,14 +121,13 @@ function main() {
 main();
 
 async function displayPluginContent() {
-    const{user_id, username, login_username, login_username002, currentTabUrl} = await getInfoFromEnv();
+    const{user_id, username, displayUsername, currentTabUrl} = await getInfoFromEnv();
 
     const formattedUrl = currentTabUrl.split('.com')[0]+'.com';
 
     console.log("user_id: ", user_id);
     console.log("username:", username);
-    console.log("login_username:", login_username);
-    console.log("login_username002:", login_username002);
+    console.log("displayUsername:", displayUsername);
     console.log("currentTabUrl:", currentTabUrl);
     console.log("formattedUrl:", formattedUrl);
 
@@ -137,7 +136,7 @@ async function displayPluginContent() {
     const pluginContent = `
     <div class="plugin-container">
         <p class="plugin-text">环境：${formattedUrl}</p>
-        <p class="plugin-text">账号：${login_username === null? login_username002:login_username} (user_id=${user_id}), 姓名：${username} </p>
+        <p class="plugin-text">账号：${displayUsername} ${user_id === null?'': '(user_id='+ user_id +')'} ${username === null? '':', 姓名: ' +username} </p>
         <p class="plugin-text">步骤：${currentTabUrl}</p>
         <button id="clip" class="clip-button">Copy Link</button>
     </div>`;
@@ -157,7 +156,7 @@ async function displayPluginContent() {
                 if (typeof currentTabUrl === 'string' && currentTabUrl.startsWith("http")) {
 
                     const environment = `环境：${currentTabUrl.split('.com')[0] + '.com'}`;
-                    const accountInfo = `账号：${login_username === null? login_username002:login_username} (user_id=${user_id}), 姓名：${username}`;
+                    const accountInfo = `账号：${displayUsername}  ${user_id === null?'': '(user_id='+ user_id +')'} ${username === null? '':', 姓名: ' +username} `;
                     const steps = `步骤：${currentTabUrl}`;
                     const textToCopy = `${environment}\n${accountInfo}\n${steps}`;
  
@@ -190,8 +189,8 @@ function getInfoFromEnv() {
                     function: getUserInfoFromLocalStorage
                 });
     
-                const {user_id, username, login_username, login_username002} = result[0]?.result || '';  
-                resolve({ user_id, username, login_username, login_username002, currentTabUrl});
+                const {user_id, username, displayUsername} = result[0]?.result || '';  
+                resolve({ user_id, username, displayUsername, currentTabUrl});
             }catch(error){
                 reject(error)
             }
@@ -206,11 +205,21 @@ function getUserInfoFromLocalStorage() {
     const user_id = localStorage.getItem("ls.user_id");
     const username = localStorage.getItem("ls.username")
     const login_username = localStorage.getItem("ls.login_username")
-    const login_username002 = localStorage.getItem("ls.loginUserName")
+    const login_username_mobile = localStorage.getItem("ls.loginUserName")
+    const sfa_admin_user = localStorage.getItem("sfa_admin_user")
 
-    return {user_id, username, login_username, login_username002}
+    let displayUsername = ''
+
+    if(sfa_admin_user) {
+        displayUsername = JSON.parse(localStorage.getItem("sfa_admin_user")).username
+
+        return {user_id, username, displayUsername}  
+    }
+    
+    displayUsername = login_username === null? login_username_mobile:login_username;
+
+    return {user_id, username, displayUsername}
 }
-
 
 function showSnackbar(message) {
     const snackbar = document.createElement("div");
