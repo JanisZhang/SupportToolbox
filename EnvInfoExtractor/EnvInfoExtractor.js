@@ -123,7 +123,9 @@ main();
 async function displayPluginContent() {
     const{user_id, username, displayUsername, currentTabUrl} = await getInfoFromEnv();
 
-    const formattedUrl = currentTabUrl.split('.com')[0]+'.com';
+    // const formattedUrl = currentTabUrl.split('.com')[0]+'.com';
+    const formattedUrl = currentTabUrl.split(/\.com|\.cn/)[0] + (currentTabUrl.includes('.cn') ? '.cn' : '.com');
+
 
     console.log("user_id: ", user_id);
     console.log("username:", username);
