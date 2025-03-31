@@ -157,7 +157,7 @@ async function displayPluginContent() {
     
                 if (typeof currentTabUrl === 'string' && currentTabUrl.startsWith("http")) {
 
-                    const environment = `环境：${currentTabUrl.split('.com')[0] + '.com'}`;
+                    const environment = `环境：${formattedUrl}`;
                     const accountInfo = `账号：${displayUsername}  ${user_id === null?'': '(user_id='+ user_id +')'} ${username === null? '':', 姓名: ' +username} `;
                     const steps = `步骤：${currentTabUrl}`;
                     const textToCopy = `${environment}\n${accountInfo}\n${steps}`;
