@@ -6,11 +6,19 @@
     "action": {
         "default_popup": "view.html"
     },
+    "background": {
+        "service_worker": "background.js"
+    },
+    "host_permissions": [
+    "https://*.veevasfa.com/"
+    ],
     "permissions": [
         "activeTab",
         "tabs",
         "cookies",
         "storage",
-        "scripting"
+        "scripting",
+        "nativeMessaging"
     ]
 }
+
