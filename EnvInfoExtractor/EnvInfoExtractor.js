@@ -5,7 +5,6 @@
  * See the LICENSE file in the project root for full license information.
  */
 
-
 const style = document.createElement("style");
 style.innerHTML = `
     
@@ -126,12 +125,18 @@ async function displayPluginContent() {
     // const formattedUrl = currentTabUrl.split('.com')[0]+'.com';
     const formattedUrl = currentTabUrl.split(/\.com|\.cn/)[0] + (currentTabUrl.includes('.cn') ? '.cn' : '.com');
 
+    //TO-DO: get prod version and current version from formattedUrl
+    const {productVersion,pscodeVersion} = await getProductVersion(currentTabUrl);
 
-    console.log("user_id: ", user_id);
-    console.log("username:", username);
-    console.log("displayUsername:", displayUsername);
-    console.log("currentTabUrl:", currentTabUrl);
-    console.log("formattedUrl:", formattedUrl);
+            console.log('productVersion:',productVersion)
+            console.log('pscodeVersion',pscodeVersion)
+    // console.log("user_id: ", user_id);
+    // console.log("username:", username);
+    // console.log("displayUsername:", displayUsername);
+    // console.log("currentTabUrl:", currentTabUrl);
+    // console.log("formattedUrl:", formattedUrl);
+    // console.log("productVersion:", productVersion);
+    // console.log("pscodeVersion:", pscodeVersion);
 
     // const formatted_Login_username = login_username.replace('\"\g','');
 
@@ -140,6 +145,9 @@ async function displayPluginContent() {
         <p class="plugin-text">环境：${formattedUrl}</p>
         <p class="plugin-text">账号：${displayUsername} ${user_id === null?'': '(user_id='+ user_id +')'} ${username === null? '':', 姓名: ' +username} </p>
         <p class="plugin-text">步骤：${currentTabUrl}</p>
+        <p class="plugin-text">...</p>
+        <p class="plugin-text">生产环境版本：${productVersion}</p>
+        <p class="plugin-text">PS branch:${pscodeVersion}</p>
         <button id="clip" class="clip-button">Copy Link</button>
     </div>`;
 
@@ -157,10 +165,28 @@ async function displayPluginContent() {
     
                 if (typeof currentTabUrl === 'string' && currentTabUrl.startsWith("http")) {
 
+                    // 环境:
+                    // 账号:
+                    // 步骤:
+                    // 实际结果:
+                    // kibana错误日志:
+                    // 配置功能参考online-help/wiki章节链接:
+                    // 期待:
+                    // 其他说明:
+                    // PS branch:
+
                     const environment = `环境：${formattedUrl}`;
                     const accountInfo = `账号：${displayUsername}  ${user_id === null?'': '(user_id='+ user_id +')'} ${username === null? '':', 姓名: ' +username} `;
                     const steps = `步骤：${currentTabUrl}`;
-                    const textToCopy = `${environment}\n${accountInfo}\n${steps}`;
+                    const prodVersion = `生产环境版本：${productVersion}`;
+                    const psVersion = `PS branch:${pscodeVersion}`;
+
+                    console.log('click ----------')
+                    console.log(environment)
+                    console.log(prodVersion)
+                    console.log(psVersion)
+
+                    const textToCopy = `${environment}\n${accountInfo}\n${steps}\n实际结果:\nkibana错误日志:\n配置功能参考online-help/wiki章节链接:\n期待:期待产品调查原因，谢谢！\n其他说明:\n${prodVersion}\n${psVersion}`;
  
                     navigator.clipboard.writeText(textToCopy).then(function () {
                         showSnackbar('Copied');
@@ -238,3 +264,57 @@ function showSnackbar(message) {
     }, 800); // Automatically disappears after 2 seconds
 }
 
+
+async function getProductVersion(currentTabUrl) {
+    const domainMap = [
+        { id: 'abbvie', domain: 'https://abbvie.veevasfa.com' },
+        { id: 'ascentage', domain: 'https://ascentage.veevasfa.com' },
+        { id: 'aspen', domain: 'https://aspenpharma.veevasfa.com' },
+        { id: 'bms', domain: 'https://bms.veevasfa.com' },
+        { id: 'beigene', domain: 'https://beigene.veevasfa.com' },
+        { id: 'cslbehring', domain: 'https://cslbehring.veevasfa.com' },
+        { id: 'edding', domain: 'https://edding.veevasfa.com' },
+        { id: 'innocare', domain: 'https://innocarepharma.veevasfa.com' },
+        { id: 'innovent', domain: 'https://innoventbio.veevasfa.com' },
+        { id: 'iconnect', domain: 'https://iconnect.veevasfa.com' },
+        { id: 'kenvue', domain: 'https://kenvuechina.veevasfa.com' },
+        { id: 'loreal', domain: 'https://lorealchina.veevasfa.com' },
+        { id: 'msd', domain: 'https://msdchina.veevasfa.com' },
+        { id: 'mconnect', domain: 'https://mconnect.veevasfa.com' },
+        { id: 'mundi', domain: 'https://mundipharma.veevasfa.com' },
+        { id: 'novoevents', domain: 'https://novoevents.veevasfa.com' },
+        { id: 'pfizer', domain: 'https://pfizer.veevasfa.com' },
+        { id: 'sansheng', domain: 'https://3sbio.veevasfa.com' }
+    ];
+
+    const matchedDomain = domainMap.find(item => currentTabUrl.includes(item.id));
+
+    if (!matchedDomain) {
+        console.warn('未匹配到对应域名的配置');
+        return null;
+    }
+
+    const versionUrl = `${matchedDomain.domain}/_version`;
+
+    try {
+        const response = await chrome.runtime.sendMessage({
+            action: "getProductVersion",
+            url: versionUrl
+        });
+
+        if (response && response.success) {
+          
+            const productVersion = response.data.productVersion;
+            const pscodeVersion = response.data.psCode;
+
+            return {productVersion,pscodeVersion};
+        } else {
+            console.error('获取对应生产版本失败:', response ? response.error : 'Unknown error');
+            return null;
+        }
+    } catch (error) {
+        console.error('发送消息到 background script 失败:', error);
+        return null;
+    }
+
+}

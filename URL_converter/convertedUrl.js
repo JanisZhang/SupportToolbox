@@ -58,7 +58,7 @@ chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
 
     const companies = [
       { id: 'abbvie', domain: 'https://abbvie.veevasfa.com' },
-      { id: 'ascentage', domain: 'https://allist.veevasfa.com' },
+      { id: 'ascentage', domain: 'https://ascentage.veevasfa.com' },
       { id: 'aspen', domain: 'https://aspenpharma.veevasfa.com' },
       { id: 'bms', domain: 'https://bms.veevasfa.com' },
       { id: 'beigene', domain: 'https://beigene.veevasfa.com' },
@@ -67,7 +67,7 @@ chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
       { id: 'innocare', domain: 'https://innocarepharma.veevasfa.com' },
       { id: 'innoventbio', domain: 'https://innoventbio.veevasfa.com' },
       { id: 'j_j', domain: 'https://iconnect.veevasfa.com' },
-      { id: 'kenvue', domain: 'https://kevuechina.veevasfa.com' },
+      { id: 'kenvue', domain: 'https://kenvuechina.veevasfa.com' },
       { id: 'loreal', domain: 'https://lorealchina.veevasfa.com' },
       { id: 'msd', domain: 'https://msdchina.veevasfa.com' },
       { id: 'merck', domain: 'https://mconnect.veevasfa.com' },
