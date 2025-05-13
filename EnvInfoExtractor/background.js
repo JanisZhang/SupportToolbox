@@ -12,12 +12,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       try {
         const response = await fetch(request.url);
         const htmlText = await response.text();
-        const versionMatch = htmlText.match(/Product Code: (GR\/\d+\.\d+\.\d+)/);
+        const productCodeMatch = htmlText.match(/Product Code: (GR\/\d+\.\d+\.\d+)/);
+        const psCodeMatch = htmlText.match(/PS Code: ([^(]+)/); 
         
         sendResponse({
           success: true,
           data: {
-            version: versionMatch ? versionMatch[1] : null,
+            productVersion: productCodeMatch ? productCodeMatch[1] : null,
+            psCode: psCodeMatch ? psCodeMatch[1].trim() : null, 
             rawHtml: htmlText
           }
         });
